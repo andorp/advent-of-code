@@ -16,9 +16,12 @@ testList =
   , 1701
   ]
 
+
+-- ### String cast non numbers to 0
 parseContent : String -> List Int
 parseContent s = map cast $ lines s
 
+-- ### List comprehension
 -- Brute force
 brutePair : List Int -> List Int
 brutePair xs =
@@ -33,6 +36,7 @@ brutePair xs =
 findPair : Int -> List Int -> Maybe Int
 findPair s = go empty
   where
+    -- ### SortedSet lives in Data.SortedSet
     go : SortedSet Int -> List Int -> Maybe Int
     go found [] = Nothing
     go found (x :: xs) = case contains x found of
@@ -59,7 +63,9 @@ findTriplet (x :: xs) = case findPair (2020 - x) xs of
 
 main : IO ()
 main = do
+  -- ### readFile lives in System.File
   Right content <- readFile "day1i1.txt"
+    -- ### Pattern Match Bind
     | Left err => printLn $ "Error while loading input: " ++ show err
   let expenses = parseContent content
   -- let expenses = testList

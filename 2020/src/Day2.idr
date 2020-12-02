@@ -7,6 +7,7 @@ import Data.DPair
 import System.File
 
 
+-- ### How to define a new type
 PasswordList : Type
 PasswordList = List (Nat, Nat, Char, String)
 
@@ -17,8 +18,11 @@ testInput =
   , (2,9,'c',"ccccccccc")
   ]
 
+
+-- ### Namespaces for separating definitions in a file.
 namespace Parsing
-  export
+
+  -- ### Private function in a namespace
   parseLine : String -> Maybe (Nat, Nat, Char, String)
   parseLine l = do
     let [range, chr, pwd] = words l
@@ -28,14 +32,19 @@ namespace Parsing
     let (n,m) = Data.Strings.break (=='-') range
     Just (stringToNatOrZ n,stringToNatOrZ (strSubstr 1 (strLength m) m),c,pwd)
 
+  -- ### Visibility, only export the name and the type, but the definition
+  -- ### stays hidden.
   export
   parseContent : String -> PasswordList
   parseContent s = mapMaybe parseLine $ lines s
 
 
 namespace FirstPart
+
   correct : (Nat, Nat, Char, String) -> Bool
   correct (n, m, c, p) =
+    -- ### Data.Vector API
+    -- ### Data.DPair and **
     -- Usage of Data.Vect: String -> (l : List Char) -> Vector (length l) Char -> (good, Vector good Char)
     let (l ** _) = filter (==c) $ fromList $ unpack p
     in n <= l && l <= m
@@ -48,18 +57,22 @@ namespace FirstPart
       go c [] = c
       go c (e :: es) = go (if correct e then (c+1) else c) es
 
+
 namespace SecondPart
 
+  -- ### I couldn't find xor.
   xor : Bool -> Bool -> Bool
   xor True False = True
   xor False True = True
   xor _ _ = False
 
   correct : (Nat, Nat, Char, String) -> Bool
---  correct (Z, _, _, _) = False
---  correct (_, Z, _, _) = False
+-- !!! This seems to be an issue, compiler tells me that this is not covering.
+-- !!! correct (Z, _, _, _) = False
+-- !!! correct (_, Z, _, _) = False
   correct (S n, S m, c, p)
     = let xs = unpack p
+      -- ### DecEq, InBounds and {auto ok : InBounds n xs}
       in case (inBounds n xs, inBounds m xs) of
           (Yes ibn, Yes ibm) => xor (index n xs == c) (index m xs == c)
           _                  => False
@@ -68,6 +81,7 @@ namespace SecondPart
   export
   correctPasswords : PasswordList -> Nat
   correctPasswords xs = fst $ filter correct $ Data.Vect.fromList xs
+
 
 main : IO ()
 main = do
