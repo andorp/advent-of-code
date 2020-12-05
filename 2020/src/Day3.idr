@@ -113,6 +113,7 @@ namespace FirstPart
       go (r :: rs) x t =
         let (S l) = length r
               | Z => Nothing
+            -- ### This got veeery confusing. Don't go there. :)
             p = mod' (l + 2) x l
         in case inBounds p r of
             Yes inb => go rs (x + 3) (if (index p r) then (t + 1) else t)
@@ -124,6 +125,8 @@ namespace SecondPart
   nonEmpty []        = No absurd
   nonEmpty (x :: xs) = Yes IsNonEmpty
 
+  -- So I decided to reimplement the logic as a stream based search.
+  -- The complexity could be reduced with a circular buffer datatype
   slope : Nat -> Nat -> TreeMap -> Maybe Nat
   slope _     _    [] = Nothing
   slope right down ts = checkTree (drop down ts) right 0
@@ -152,6 +155,22 @@ namespace SecondPart
         , (7,1)
         , (1,2)
         ]
+
+namespace Parser
+  parseLine : (n : Nat) -> (l : List Char) -> Maybe (Vect n Bool)
+  parseLine Z     []        = Just []
+  parseLine (S n) (x :: xs) = map (x=='#' ::) (parseLine n xs)
+  parseLine _     _         = Nothing
+
+  parseContent
+    :  (l : List (List Char))
+    -> (n : Nat)
+    -> Maybe (Vect (length l) (Vect n Bool))
+  parseContent l n =
+    let v : ?
+        v = map (parseLine n) l in
+    rewrite sym $ lengthMap {f = parseLine n} l in
+    sequence $ fromList v
 
 main : IO ()
 main = do
