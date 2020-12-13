@@ -137,6 +137,8 @@ Both parts of this puzzle are complete! They provide two gold stars: **
 At this point, you should return to your Advent calendar and try another puzzle.
 -}
 
+-- My personal objective for this day to learn about Vect represented GRIDs.
+
 import System.File
 import Data.Vect
 import Data.Nat
