@@ -290,12 +290,6 @@ namespace SecondPart
             (\name , v => if isInfixOf "departure" name then v else 1)
             fields t
 
-  export
-  test : Description -> {n : Nat} -> List (Ticket n) -> IO ()
-  test d ts = do
-    printLn $ determineFields d $ keepValidTickets d ts
-    pure ()
-
 main : IO ()
 main = do
   Right content <- readFile "day16i1.txt"
